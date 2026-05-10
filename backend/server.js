@@ -392,7 +392,37 @@ app.post('/api/test-scan', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// ================= ADMIN: ALL SCAN HISTORY =================
+app.get('/api/admin/scans', (req, res) => {
+  const { adminKey } = req.query;
+  if (adminKey !== ADMIN_KEY) {
+    return res.status(403).json({ error: 'Invalid admin key' });
+  }
+  
+  db.all(
+    `SELECT sh.*, u.email as user_email 
+     FROM scan_history sh 
+     JOIN users u ON sh.user_id = u.id 
+     ORDER BY sh.scanned_at DESC 
+     LIMIT 100`,
+    [],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      
+      const scans = rows.map(r => ({
+        id: r.id,
+        user_id: r.user_id,
+        user_email: r.user_email,
+        entries: JSON.parse(r.entries),
+        total_volume: r.total_volume,
+        image_preview: r.image_preview,
+        scanned_at: r.scanned_at
+      }));
+      
+      res.json(scans);
+    }
+  );
+});
 // ================= SCAN HISTORY =================
 
 app.post('/api/save-scan', auth, (req, res) => {

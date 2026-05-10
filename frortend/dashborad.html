@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WoodApp Admin Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111;color:#f5e6c8;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+header{background:#1a1005;border-bottom:2px solid #c47a1a;padding:20px;margin-bottom:20px;border-radius:12px}
+header h1{color:#e8a742;font-size:24px}
+header p{color:#7a5030;font-size:14px;margin-top:5px}
+
+/* Login */
+.login-box{max-width:400px;margin:100px auto;background:#1a1005;border-radius:12px;padding:30px;border:1px solid #4a2a10}
+.login-box h2{color:#e8a742;text-align:center;margin-bottom:20px}
+.login-box input{width:100%;background:#120c04;border:1.5px solid #5a3515;border-radius:10px;padding:14px;color:#f5e6c8;font-size:15px;margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:#c47a1a}
+.login-box button{width:100%;background:#c47a1a;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer}
+.login-box .error{color:#ff7070;font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* Stats Cards */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+.stat-card{background:#1a1005;border-radius:12px;padding:20px;border:1px solid #4a2a10}
+.stat-card h3{color:#7a5030;font-size:13px;text-transform:uppercase;margin-bottom:8px}
+.stat-card .value{color:#e8a742;font-size:32px;font-weight:800}
+.stat-card .change{color:#6abf50;font-size:12px;margin-top:5px}
+
+/* Tables */
+.table-wrap{background:#1a1005;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #4a2a10;overflow-x:auto}
+.table-wrap h2{color:#e8a742;font-size:18px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
+.table-wrap h2 button{background:#c47a1a;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#1e1005}
+th{padding:12px 10px;color:#c8804a;text-align:left;font-weight:600}
+td{padding:10px;border-top:1px solid #2a1808}
+tr:hover{background:#150e04}
+.status-active{color:#6abf50;font-weight:600}
+.status-expired{color:#ff7070;font-weight:600}
+.status-inactive{color:#7a5030}
+
+/* Forms */
+.form-inline{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+.form-inline input,.form-inline select{flex:1;min-width:150px;background:#120c04;border:1.5px solid #5a3515;border-radius:8px;padding:10px;color:#f5e6c8;font-size:13px;outline:none}
+.form-inline input:focus,.form-inline select:focus{border-color:#c47a1a}
+.form-inline button{background:#c47a1a;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
+
+/* Actions */
+.action-btn{background:none;border:none;color:#c8904a;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px}
+.action-btn.delete{color:#ff7070}
+
+/* Modal */
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal-content{background:#1a1005;border-radius:12px;padding:25px;max-width:500px;width:90%;border:2px solid #c47a1a}
+.modal-content h3{color:#e8a742;margin-bottom:15px}
+.modal-content p{color:#c8904a;line-height:1.8;margin-bottom:15px}
+.modal-content .buttons{display:flex;gap:10px;justify-content:flex-end}
+.modal-content button{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+.modal-content .confirm{background:#c47a1a;color:#fff}
+.modal-content .cancel{background:#2a1505;color:#c8904a;border:1px solid #4a2a10}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:#1a3a10;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform 0.3s;z-index:1001}
+.toast.show{transform:translateY(0)}
+.toast.error{background:#3a0a0a;color:#ff7070}
+
+/* Refresh */
+.refresh-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.refresh-bar button{background:#2a1505;color:#c8904a;border:1px solid #4a2a10;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
+.refresh-bar .last-update{color:#5a3a18;font-size:12px}
+
+/* Scan History Preview */
+.scan-preview{max-width:100px;max-height:60px;border-radius:4px;object-fit:cover}
+.entries-list{color:#7a5030;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div id="app">
+  <!-- LOGIN -->
+  <div id="loginScreen" class="login-box">
+    <h2>🔐 Admin Dashboard</h2>
+    <input id="apiUrl" type="text" placeholder="API URL (e.g. http://localhost:3001)" value="http://localhost:3001"/>
+    <input id="adminKey" type="password" placeholder="Admin Key"/>
+    <button onclick="login()">Login</button>
+    <p id="loginError" class="error">Invalid admin key</p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none">
+    <div class="container">
+      <header>
+        <h1>🪵 WoodApp Admin Dashboard</h1>
+        <p>Manage users, subscriptions, and monitor app usage</p>
+      </header>
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Total Users</h3>
+          <div class="value" id="statUsers">0</div>
+          <div class="change">Registered accounts</div>
+        </div>
+        <div class="stat-card">
+          <h3>Active Subs</h3>
+          <div class="value" id="statActive">0</div>
+          <div class="change">Paying customers</div>
+        </div>
+        <div class="stat-card">
+          <h3>Expired Today</h3>
+          <div class="value" id="statExpired">0</div>
+          <div class="change">Need renewal</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Scans</h3>
+          <div class="value" id="statScans">0</div>
+          <div class="change">All time</div>
+        </div>
+      </div>
+
+      <!-- ACTIVATE USER -->
+      <div class="table-wrap">
+        <h2>⚡ Quick Activate</h2>
+        <div class="form-inline">
+          <input id="actEmail" type="email" placeholder="User email"/>
+          <input id="actDays" type="number" placeholder="Days (default 30)" value="30"/>
+          <button onclick="activateUser()">Activate Subscription</button>
+        </div>
+      </div>
+
+      <!-- USERS TABLE -->
+      <div class="table-wrap">
+        <div class="refresh-bar">
+          <h2>👥 All Users</h2>
+          <div>
+            <span class="last-update" id="lastUpdate">Last updated: never</span>
+            <button onclick="loadUsers()">🔄 Refresh</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Days Left</th>
+              <th>Scans Today</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+
+      <!-- SCAN HISTORY -->
+      <div class="table-wrap">
+        <div class="refresh-bar">
+          <h2>📋 Recent Scans</h2>
+          <div>
+            <span class="last-update" id="lastScanUpdate">Last updated: never</span>
+            <button onclick="loadScans()">🔄 Refresh</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Date</th>
+              <th>Entries</th>
+              <th>Total Volume</th>
+              <th>Measurements</th>
+            </tr>
+          </thead>
+          <tbody id="scansTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Confirm Action</h3>
+    <p id="modalBody">Are you sure?</p>
+    <div class="buttons">
+      <button class="cancel" onclick="closeModal()">Cancel</button>
+      <button class="confirm" id="modalConfirm" onclick="confirmAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast">Action completed successfully</div>
+
+<script>
+// ================= CONFIG =================
+let API_BASE = '';
+let ADMIN_KEY = '';
+let pendingAction = null;
+
+// ================= AUTH =================
+function login() {
+  API_BASE = document.getElementById('apiUrl').value.trim();
+  ADMIN_KEY = document.getElementById('adminKey').value.trim();
+
+  if (!API_BASE || !ADMIN_KEY) {
+    showError('Please fill all fields');
+    return;
+  }
+
+  // Add /api if not present
+  if (!API_BASE.includes('/api')) {
+    API_BASE = API_BASE.replace(/\/$/, '') + '/api';
+  }
+
+  // Test admin key
+  fetch(`${API_BASE}/admin/users?adminKey=${encodeURIComponent(ADMIN_KEY)}`)
+    .then(r => {
+      if (!r.ok) throw new Error('Invalid admin key');
+      return r.json();
+    })
+    .then(data => {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadUsers();
+      loadScans();
+      showToast('Welcome to Admin Dashboard');
+    })
+    .catch(err => {
+      showError(err.message);
+    });
+}
+
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ================= STATS & USERS =================
+async function loadUsers() {
+  try {
+    const res = await fetch(`${API_BASE}/admin/users?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
+    const users = await res.json();
+
+    // Update stats
+    document.getElementById('statUsers').textContent = users.length;
+    document.getElementById('statActive').textContent = users.filter(u => u.subscription.active).length;
+    document.getElementById('statExpired').textContent = users.filter(u => u.subscription.reason === 'expired').length;
+
+    // Update table
+    const tbody = document.getElementById('usersTable');
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td>${u.id}</td>
+        <td>${u.email}</td>
+        <td class="status-${u.subscription.reason}">${u.subscription.reason.toUpperCase()}</td>
+        <td>${u.subscription.daysLeft}</td>
+        <td>${u.scans.used} / ${u.scans.limit}</td>
+        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button class="action-btn" onclick="extendUser('${u.email}')">Extend</button>
+          <button class="action-btn delete" onclick="deleteUser('${u.email}')">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+
+    document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+  } catch (err) {
+    showToast('Failed to load users: ' + err.message, true);
+  }
+}
+
+// ================= ACTIVATE / EXTEND =================
+async function activateUser() {
+  const email = document.getElementById('actEmail').value.trim();
+  const days = parseInt(document.getElementById('actDays').value) || 30;
+
+  if (!email) {
+    showToast('Please enter an email', true);
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/extend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminKey: ADMIN_KEY, email, days })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      showToast(`Activated ${email} for ${days} days`);
+      document.getElementById('actEmail').value = '';
+      loadUsers();
+    } else {
+      showToast(data.error || 'Failed to activate', true);
+    }
+  } catch (err) {
+    showToast('Error: ' + err.message, true);
+  }
+}
+
+function extendUser(email) {
+  document.getElementById('actEmail').value = email;
+  document.getElementById('actDays').value = '30';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast(`Ready to extend ${email}`);
+}
+
+// ================= DELETE USER =================
+function deleteUser(email) {
+  pendingAction = () => {
+    showToast(`Delete user ${email} - endpoint needed in backend`);
+    closeModal();
+  };
+
+  document.getElementById('modalTitle').textContent = 'Delete User';
+  document.getElementById('modalBody').textContent = `Are you sure you want to delete ${email}? This cannot be undone.`;
+  document.getElementById('modal').classList.add('active');
+}
+
+// ================= SCAN HISTORY =================
+async function loadScans() {
+  try {
+    const res = await fetch(`${API_BASE}/admin/scans?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
+    if (!res.ok) throw new Error('Failed to load scans');
+    const scans = await res.json();
+
+    const tbody = document.getElementById('scansTable');
+    if (!scans.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#7a5030">No scans yet</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = scans.map(s => `
+      <tr>
+        <td>${s.user_email}</td>
+        <td>${new Date(s.scanned_at).toLocaleString()}</td>
+        <td>${s.entries.length}</td>
+        <td>${s.total_volume.toFixed(3)} ft³</td>
+        <td class="entries-list">${s.entries.map(e => `${e.a_raw}×${e.b_raw}`).join(', ')}</td>
+      </tr>
+    `).join('');
+
+    document.getElementById('statScans').textContent = scans.length;
+    document.getElementById('lastScanUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+  } catch (err) {
+    document.getElementById('scansTable').innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7a5030">${err.message}</td></tr>`;
+  }
+}
+
+// ================= MODAL =================
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  pendingAction = null;
+}
+
+function confirmAction() {
+  if (pendingAction) pendingAction();
+}
+
+// ================= TOAST =================
+function showToast(msg, isError) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast' + (isError ? ' error' : '') + ' show';
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ================= AUTO REFRESH =================
+setInterval(() => {
+  if (document.getElementById('dashboard').style.display !== 'none') {
+    loadUsers();
+    loadScans();
+  }
+}, 30000); // Refresh every 30 seconds
+</script>
+</body>
+</html>
