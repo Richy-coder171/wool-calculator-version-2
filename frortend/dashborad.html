@@ -4,13 +4,15 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WoodApp Admin Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0d0a14;color:#e8d8f5;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
 .container{max-width:1200px;margin:0 auto;padding:20px}
-header{background:#160d24;border-bottom:2px solid #7c3aed;padding:20px;margin-bottom:20px;border-radius:12px}
+header{background:#160d24;border-bottom:2px solid #7c3aed;padding:20px;margin-bottom:20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 header h1{color:#c084fc;font-size:24px}
 header p{color:#5b3a7a;font-size:14px;margin-top:5px}
+.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
 /* Login */
 .login-box{max-width:400px;margin:100px auto;background:#160d24;border-radius:12px;padding:30px;border:1px solid #3b1f5e}
@@ -21,16 +23,28 @@ header p{color:#5b3a7a;font-size:14px;margin-top:5px}
 .login-box .error{color:#ff7070;font-size:13px;text-align:center;margin-top:10px;display:none}
 
 /* Stats Cards */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px}
 .stat-card{background:#160d24;border-radius:12px;padding:20px;border:1px solid #3b1f5e}
 .stat-card h3{color:#5b3a7a;font-size:13px;text-transform:uppercase;margin-bottom:8px}
 .stat-card .value{color:#c084fc;font-size:32px;font-weight:800}
 .stat-card .change{color:#6abf50;font-size:12px;margin-top:5px}
+.stat-card.revenue .value{color:#a78bfa;font-size:26px}
+.revenue-input-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+.revenue-input-row input{width:70px;background:#0e0819;border:1px solid #4a2575;border-radius:6px;padding:4px 6px;color:#e8d8f5;font-size:12px;outline:none}
+.revenue-input-row label{color:#5b3a7a;font-size:11px}
+
+/* Charts */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
+@media(max-width:700px){.charts-grid{grid-template-columns:1fr}}
+.chart-card{background:#160d24;border-radius:12px;padding:20px;border:1px solid #3b1f5e}
+.chart-card h2{color:#c084fc;font-size:16px;margin-bottom:15px}
+.chart-card canvas{max-height:220px}
 
 /* Tables */
 .table-wrap{background:#160d24;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #3b1f5e;overflow-x:auto}
-.table-wrap h2{color:#c084fc;font-size:18px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
-.table-wrap h2 button{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600}
+.table-wrap-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.table-wrap-header h2{color:#c084fc;font-size:18px}
+.table-wrap-header .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead tr{background:#12092a}
 th{padding:12px 10px;color:#a855f7;text-align:left;font-weight:600}
@@ -46,11 +60,20 @@ tr:hover{background:#100820}
 .form-inline input:focus,.form-inline select:focus{border-color:#7c3aed}
 .form-inline button{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
 
-/* Actions */
-.action-btn{background:none;border:none;color:#a855f7;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px}
-.action-btn.delete{color:#ff7070}
+/* Search */
+.search-bar{width:100%;background:#0e0819;border:1.5px solid #4a2575;border-radius:8px;padding:9px 12px;color:#e8d8f5;font-size:13px;outline:none;margin-bottom:12px}
+.search-bar:focus{border-color:#7c3aed}
 
-/* Modal */
+/* Buttons */
+.action-btn{background:none;border:none;color:#a855f7;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px;margin-right:4px}
+.action-btn.delete{color:#ff7070}
+.action-btn.view{color:#60a5fa}
+.btn-sm{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn-sm:hover{background:#2a1a4e}
+.btn-export{background:#1a0e2e;color:#6abf50;border:1px solid #2a4020;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn-export:hover{background:#1a2e1a}
+
+/* Confirm Modal (original) */
 .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
 .modal.active{display:flex}
 .modal-content{background:#160d24;border-radius:12px;padding:25px;max-width:500px;width:90%;border:2px solid #7c3aed}
@@ -61,24 +84,40 @@ tr:hover{background:#100820}
 .modal-content .confirm{background:#7c3aed;color:#fff}
 .modal-content .cancel{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e}
 
+/* User Detail Modal */
+.user-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1001;align-items:center;justify-content:center;padding:20px}
+.user-modal.active{display:flex}
+.user-modal-content{background:#160d24;border-radius:12px;padding:25px;max-width:720px;width:100%;border:2px solid #7c3aed;max-height:85vh;overflow-y:auto;position:relative}
+.user-modal-content h3{color:#c084fc;margin-bottom:6px;font-size:18px;padding-right:30px}
+.user-modal-meta{color:#5b3a7a;font-size:12px;margin-bottom:16px}
+.user-modal-section{margin-bottom:16px}
+.user-modal-section h4{color:#a855f7;font-size:12px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.user-modal-kv{display:grid;grid-template-columns:140px 1fr;gap:5px 10px;font-size:13px}
+.user-modal-kv .k{color:#5b3a7a}
+.user-modal-kv .v{color:#e8d8f5}
+.user-modal-close{position:absolute;top:20px;right:20px;background:none;border:none;color:#a855f7;font-size:20px;cursor:pointer;line-height:1}
+.scan-row-mini{background:#100820;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
+.scan-row-mini .scan-date{color:#c084fc;font-weight:600;margin-bottom:4px}
+.scan-row-mini .scan-details{color:#7a5a9a;display:flex;gap:16px;flex-wrap:wrap}
+.scan-row-mini .scan-entries{color:#5b3a7a;margin-top:4px;font-size:11px;word-break:break-all}
+.no-scans{color:#3d2060;font-size:13px;padding:16px 0;text-align:center}
+
 /* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:#1a0e3a;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform 0.3s;z-index:1001}
+.toast{position:fixed;bottom:20px;right:20px;background:#1a0e3a;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform 0.3s;z-index:1100}
 .toast.show{transform:translateY(0)}
 .toast.error{background:#3a0a0a;color:#ff7070}
 
 /* Refresh */
-.refresh-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.refresh-bar button{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
-.refresh-bar .last-update{color:#3d2060;font-size:12px}
+.last-update{color:#3d2060;font-size:12px;margin-right:6px}
 
-/* Scan History Preview */
-.scan-preview{max-width:100px;max-height:60px;border-radius:4px;object-fit:cover}
+/* Scan entries col */
 .entries-list{color:#5b3a7a;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 <base target="_blank">
 </head>
 <body>
 <div id="app">
+
   <!-- LOGIN -->
   <div id="loginScreen" class="login-box">
     <h2>🔐 Admin Dashboard</h2>
@@ -92,8 +131,14 @@ tr:hover{background:#100820}
   <div id="dashboard" style="display:none">
     <div class="container">
       <header>
-        <h1>🪵 WoodApp Admin Dashboard</h1>
-        <p>Manage users, subscriptions, and monitor app usage</p>
+        <div>
+          <h1>🪵 WoodApp Admin Dashboard</h1>
+          <p>Manage users, subscriptions, and monitor app usage</p>
+        </div>
+        <div class="header-right">
+          <button class="btn-export" onclick="exportUsersCSV()">⬇ Users CSV</button>
+          <button class="btn-export" onclick="exportScansCSV()">⬇ Scans CSV</button>
+        </div>
       </header>
 
       <!-- STATS -->
@@ -118,11 +163,31 @@ tr:hover{background:#100820}
           <div class="value" id="statScans">0</div>
           <div class="change">All time</div>
         </div>
+        <div class="stat-card revenue">
+          <h3>Est. Revenue / mo</h3>
+          <div class="value" id="statRevenue">$0</div>
+          <div class="revenue-input-row">
+            <label>$/user</label>
+            <input id="revenuePrice" type="number" value="9.99" min="0" step="0.01" oninput="updateRevenue()"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h2>📈 Scan Trend (last 14 days)</h2>
+          <canvas id="chartScans"></canvas>
+        </div>
+        <div class="chart-card">
+          <h2>📊 Subscriptions by Join Date</h2>
+          <canvas id="chartSubs"></canvas>
+        </div>
       </div>
 
       <!-- ACTIVATE USER -->
       <div class="table-wrap">
-        <h2>⚡ Quick Activate</h2>
+        <h2 style="color:#c084fc;font-size:18px;margin-bottom:12px">⚡ Quick Activate</h2>
         <div class="form-inline">
           <input id="actEmail" type="email" placeholder="User email"/>
           <input id="actDays" type="number" placeholder="Days (default 30)" value="30"/>
@@ -132,23 +197,19 @@ tr:hover{background:#100820}
 
       <!-- USERS TABLE -->
       <div class="table-wrap">
-        <div class="refresh-bar">
+        <div class="table-wrap-header">
           <h2>👥 All Users</h2>
-          <div>
-            <span class="last-update" id="lastUpdate">Last updated: never</span>
-            <button onclick="loadUsers()">🔄 Refresh</button>
+          <div class="right">
+            <span class="last-update" id="lastUpdate">Never updated</span>
+            <button class="btn-sm" onclick="loadUsers()">🔄 Refresh</button>
           </div>
         </div>
+        <input id="userSearch" class="search-bar" type="text" placeholder="🔍 Search by email or status…" oninput="filterUsers()"/>
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th>Days Left</th>
-              <th>Scans Today</th>
-              <th>Created</th>
-              <th>Actions</th>
+              <th>ID</th><th>Email</th><th>Status</th><th>Days Left</th>
+              <th>Scans Today</th><th>Created</th><th>Actions</th>
             </tr>
           </thead>
           <tbody id="usersTable"></tbody>
@@ -157,31 +218,28 @@ tr:hover{background:#100820}
 
       <!-- SCAN HISTORY -->
       <div class="table-wrap">
-        <div class="refresh-bar">
+        <div class="table-wrap-header">
           <h2>📋 Recent Scans</h2>
-          <div>
-            <span class="last-update" id="lastScanUpdate">Last updated: never</span>
-            <button onclick="loadScans()">🔄 Refresh</button>
+          <div class="right">
+            <span class="last-update" id="lastScanUpdate">Never updated</span>
+            <button class="btn-sm" onclick="loadScans()">🔄 Refresh</button>
           </div>
         </div>
         <table>
           <thead>
             <tr>
-              <th>User</th>
-              <th>Date</th>
-              <th>Entries</th>
-              <th>Total Volume</th>
-              <th>Measurements</th>
+              <th>User</th><th>Date</th><th>Entries</th><th>Total Volume</th><th>Measurements</th>
             </tr>
           </thead>
           <tbody id="scansTable"></tbody>
         </table>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- CONFIRM MODAL (original — untouched) -->
 <div id="modal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">Confirm Action</h3>
@@ -193,105 +251,153 @@ tr:hover{background:#100820}
   </div>
 </div>
 
+<!-- USER DETAIL MODAL (new) -->
+<div id="userModal" class="user-modal">
+  <div class="user-modal-content">
+    <button class="user-modal-close" onclick="closeUserModal()">✕</button>
+    <h3 id="umEmail">User Detail</h3>
+    <p class="user-modal-meta" id="umMeta"></p>
+    <div class="user-modal-section">
+      <h4>Account Info</h4>
+      <div class="user-modal-kv" id="umInfo"></div>
+    </div>
+    <div class="user-modal-section">
+      <h4>Scan History</h4>
+      <div id="umScans"></div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="toast">Action completed successfully</div>
 
 <script>
-// ================= CONFIG =================
+// ============================================================
+// CONFIG
+// ============================================================
 let API_BASE = '';
 let ADMIN_KEY = '';
 let pendingAction = null;
 
-// ================= AUTH =================
+// Global caches — populated on load & refresh
+let allUsers = [];
+let allScans = [];
+
+// Chart instances — destroyed before redraw to prevent canvas reuse errors
+let chartScansInst = null;
+let chartSubsInst  = null;
+
+// ============================================================
+// AUTH  (original, untouched)
+// ============================================================
 function login() {
-  API_BASE = document.getElementById('apiUrl').value.trim();
+  API_BASE  = document.getElementById('apiUrl').value.trim();
   ADMIN_KEY = document.getElementById('adminKey').value.trim();
 
-  if (!API_BASE || !ADMIN_KEY) {
-    showError('Please fill all fields');
-    return;
-  }
+  if (!API_BASE || !ADMIN_KEY) { showError('Please fill all fields'); return; }
 
-  // Add /api if not present
   if (!API_BASE.includes('/api')) {
     API_BASE = API_BASE.replace(/\/$/, '') + '/api';
   }
 
-  // Test admin key
   fetch(`${API_BASE}/admin/users?adminKey=${encodeURIComponent(ADMIN_KEY)}`)
     .then(r => {
       if (!r.ok) throw new Error('Invalid admin key');
       return r.json();
     })
-    .then(data => {
+    .then(() => {
       document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('dashboard').style.display  = 'block';
       loadUsers();
       loadScans();
       showToast('Welcome to Admin Dashboard');
     })
-    .catch(err => {
-      showError(err.message);
-    });
+    .catch(err => showError(err.message));
 }
 
 function showError(msg) {
   const el = document.getElementById('loginError');
-  el.textContent = msg;
+  el.textContent  = msg;
   el.style.display = 'block';
 }
 
-// ================= STATS & USERS =================
+// ============================================================
+// USERS  (fetch logic original; rendering extracted so search works)
+// ============================================================
 async function loadUsers() {
   try {
     const res = await fetch(`${API_BASE}/admin/users?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
-    const users = await res.json();
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allUsers = await res.json();
 
-    // Update stats
-    document.getElementById('statUsers').textContent = users.length;
-    document.getElementById('statActive').textContent = users.filter(u => u.subscription.active).length;
-    document.getElementById('statExpired').textContent = users.filter(u => u.subscription.reason === 'expired').length;
+    // Stats — identical to original
+    document.getElementById('statUsers').textContent   = allUsers.length;
+    document.getElementById('statActive').textContent  = allUsers.filter(u => u.subscription.active).length;
+    document.getElementById('statExpired').textContent = allUsers.filter(u => u.subscription.reason === 'expired').length;
+    updateRevenue();
 
-    // Update table
-    const tbody = document.getElementById('usersTable');
-    tbody.innerHTML = users.map(u => `
-      <tr>
-        <td>${u.id}</td>
-        <td>${u.email}</td>
-        <td class="status-${u.subscription.reason}">${u.subscription.reason.toUpperCase()}</td>
-        <td>${u.subscription.daysLeft}</td>
-        <td>${u.scans.used} / ${u.scans.limit}</td>
-        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-        <td>
-          <button class="action-btn" onclick="extendUser('${u.email}')">Extend</button>
-          <button class="action-btn delete" onclick="deleteUser('${u.email}')">Delete</button>
-        </td>
-      </tr>
-    `).join('');
+    // Re-apply search so a live filter isn't blown away by auto-refresh
+    filterUsers();
 
     document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+    drawSubsChart();
   } catch (err) {
     showToast('Failed to load users: ' + err.message, true);
   }
 }
 
-// ================= ACTIVATE / EXTEND =================
-async function activateUser() {
-  const email = document.getElementById('actEmail').value.trim();
-  const days = parseInt(document.getElementById('actDays').value) || 30;
-
-  if (!email) {
-    showToast('Please enter an email', true);
+// Renders whatever subset of users is passed in — keeps action buttons working
+function renderUsers(list) {
+  const tbody = document.getElementById('usersTable');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#5b3a7a">No users found</td></tr>';
     return;
   }
+  tbody.innerHTML = list.map(u => {
+    // Use JSON.stringify so emails with special chars are safe in onclick attrs
+    const emailJS = JSON.stringify(u.email);
+    return `
+      <tr>
+        <td>${esc(String(u.id))}</td>
+        <td>${esc(u.email)}</td>
+        <td class="status-${esc(u.subscription.reason)}">${esc(u.subscription.reason.toUpperCase())}</td>
+        <td>${u.subscription.daysLeft}</td>
+        <td>${u.scans.used} / ${u.scans.limit}</td>
+        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button class="action-btn view"   onclick="openUserModal(${emailJS})">View</button>
+          <button class="action-btn"        onclick="extendUser(${emailJS})">Extend</button>
+          <button class="action-btn delete" onclick="deleteUser(${emailJS})">Delete</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+// Live search — purely client-side, never touches the backend
+function filterUsers() {
+  const q = (document.getElementById('userSearch').value || '').trim().toLowerCase();
+  if (!q) { renderUsers(allUsers); return; }
+  renderUsers(allUsers.filter(u =>
+    u.email.toLowerCase().includes(q) ||
+    u.subscription.reason.toLowerCase().includes(q)
+  ));
+}
+
+// ============================================================
+// ACTIVATE / EXTEND  (original, untouched)
+// ============================================================
+async function activateUser() {
+  const email = document.getElementById('actEmail').value.trim();
+  const days  = parseInt(document.getElementById('actDays').value) || 30;
+
+  if (!email) { showToast('Please enter an email', true); return; }
 
   try {
     const res = await fetch(`${API_BASE}/admin/extend`, {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ adminKey: ADMIN_KEY, email, days })
+      body:    JSON.stringify({ adminKey: ADMIN_KEY, email, days })
     });
-
     const data = await res.json();
     if (data.success) {
       showToast(`Activated ${email} for ${days} days`);
@@ -307,78 +413,284 @@ async function activateUser() {
 
 function extendUser(email) {
   document.getElementById('actEmail').value = email;
-  document.getElementById('actDays').value = '30';
+  document.getElementById('actDays').value  = '30';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   showToast(`Ready to extend ${email}`);
 }
 
-// ================= DELETE USER =================
+// ============================================================
+// DELETE USER  (original, untouched)
+// ============================================================
 function deleteUser(email) {
   pendingAction = () => {
     showToast(`Delete user ${email} - endpoint needed in backend`);
     closeModal();
   };
-
   document.getElementById('modalTitle').textContent = 'Delete User';
-  document.getElementById('modalBody').textContent = `Are you sure you want to delete ${email}? This cannot be undone.`;
+  document.getElementById('modalBody').textContent  = `Are you sure you want to delete ${email}? This cannot be undone.`;
   document.getElementById('modal').classList.add('active');
 }
 
-// ================= SCAN HISTORY =================
+// ============================================================
+// SCAN HISTORY  (original fetch & render untouched; cache added)
+// ============================================================
 async function loadScans() {
   try {
     const res = await fetch(`${API_BASE}/admin/scans?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
     if (!res.ok) throw new Error('Failed to load scans');
-    const scans = await res.json();
+    allScans = await res.json();
 
     const tbody = document.getElementById('scansTable');
-    if (!scans.length) {
+    if (!allScans.length) {
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#5b3a7a">No scans yet</td></tr>';
-      return;
+    } else {
+      tbody.innerHTML = allScans.map(s => `
+        <tr>
+          <td>${esc(s.user_email)}</td>
+          <td>${new Date(s.scanned_at).toLocaleString()}</td>
+          <td>${s.entries.length}</td>
+          <td>${s.total_volume.toFixed(3)} ft³</td>
+          <td class="entries-list">${s.entries.map(e => `${esc(e.a_raw)}×${esc(e.b_raw)}`).join(', ')}</td>
+        </tr>`
+      ).join('');
     }
 
-    tbody.innerHTML = scans.map(s => `
-      <tr>
-        <td>${s.user_email}</td>
-        <td>${new Date(s.scanned_at).toLocaleString()}</td>
-        <td>${s.entries.length}</td>
-        <td>${s.total_volume.toFixed(3)} ft³</td>
-        <td class="entries-list">${s.entries.map(e => `${e.a_raw}×${e.b_raw}`).join(', ')}</td>
-      </tr>
-    `).join('');
-
-    document.getElementById('statScans').textContent = scans.length;
+    document.getElementById('statScans').textContent      = allScans.length;
     document.getElementById('lastScanUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+    drawScansChart();
   } catch (err) {
-    document.getElementById('scansTable').innerHTML = `<tr><td colspan="5" style="text-align:center;color:#5b3a7a">${err.message}</td></tr>`;
+    document.getElementById('scansTable').innerHTML =
+      `<tr><td colspan="5" style="text-align:center;color:#5b3a7a">${esc(err.message)}</td></tr>`;
   }
 }
 
-// ================= MODAL =================
+// ============================================================
+// REVENUE TRACKER
+// ============================================================
+function updateRevenue() {
+  const price  = parseFloat(document.getElementById('revenuePrice').value) || 0;
+  const active = allUsers.filter(u => u.subscription.active).length;
+  document.getElementById('statRevenue').textContent = '$' + (price * active).toFixed(2);
+}
+
+// ============================================================
+// ANALYTICS CHARTS
+// ============================================================
+function getLast14Days() {
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  return days;
+}
+
+function shortLabel(isoDay) {
+  const [, m, dd] = isoDay.split('-');
+  return `${m}/${dd}`;
+}
+
+function drawScansChart() {
+  const days   = getLast14Days();
+  const counts = days.map(day =>
+    allScans.filter(s => s.scanned_at && s.scanned_at.slice(0, 10) === day).length
+  );
+
+  if (chartScansInst) { chartScansInst.destroy(); chartScansInst = null; }
+
+  chartScansInst = new Chart(document.getElementById('chartScans').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: days.map(shortLabel),
+      datasets: [{
+        label: 'Scans',
+        data: counts,
+        borderColor: '#a855f7',
+        backgroundColor: 'rgba(168,85,247,0.15)',
+        borderWidth: 2,
+        pointBackgroundColor: '#c084fc',
+        pointRadius: 4,
+        tension: 0.35,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#a855f7', font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#5b3a7a', font: { size: 10 } }, grid: { color: '#1e0f35' } },
+        y: { ticks: { color: '#5b3a7a', font: { size: 10 }, precision: 0 }, grid: { color: '#1e0f35' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function drawSubsChart() {
+  const days         = getLast14Days();
+  const activeCounts = days.map(day =>
+    allUsers.filter(u => u.createdAt && u.createdAt.slice(0,10) === day && u.subscription.active).length
+  );
+  const expiredCounts = days.map(day =>
+    allUsers.filter(u => u.createdAt && u.createdAt.slice(0,10) === day && u.subscription.reason === 'expired').length
+  );
+
+  if (chartSubsInst) { chartSubsInst.destroy(); chartSubsInst = null; }
+
+  chartSubsInst = new Chart(document.getElementById('chartSubs').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: days.map(shortLabel),
+      datasets: [
+        { label: 'Active',   data: activeCounts,  backgroundColor: 'rgba(106,191,80,0.75)', borderRadius: 4 },
+        { label: 'Expired',  data: expiredCounts, backgroundColor: 'rgba(255,112,112,0.65)', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#a855f7', font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#5b3a7a', font: { size: 10 } }, grid: { color: '#1e0f35' }, stacked: true },
+        y: { ticks: { color: '#5b3a7a', font: { size: 10 }, precision: 0 }, grid: { color: '#1e0f35' }, beginAtZero: true, stacked: true }
+      }
+    }
+  });
+}
+
+// ============================================================
+// CSV EXPORT
+// ============================================================
+function downloadCSV(filename, rows) {
+  const csv = rows.map(r =>
+    r.map(cell => {
+      const s = String(cell ?? '').replace(/"/g, '""');
+      return /[,"\n\r]/.test(s) ? `"${s}"` : s;
+    }).join(',')
+  ).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportUsersCSV() {
+  if (!allUsers.length) { showToast('No users loaded yet', true); return; }
+  downloadCSV('woodapp-users.csv', [
+    ['ID','Email','Status','Days Left','Scans Used','Scans Limit','Created'],
+    ...allUsers.map(u => [
+      u.id, u.email, u.subscription.reason, u.subscription.daysLeft,
+      u.scans.used, u.scans.limit, new Date(u.createdAt).toLocaleDateString()
+    ])
+  ]);
+  showToast('Users CSV downloaded');
+}
+
+function exportScansCSV() {
+  if (!allScans.length) { showToast('No scans loaded yet', true); return; }
+  downloadCSV('woodapp-scans.csv', [
+    ['User Email','Scanned At','Entries','Total Volume (ft³)','Measurements'],
+    ...allScans.map(s => [
+      s.user_email,
+      new Date(s.scanned_at).toLocaleString(),
+      s.entries.length,
+      s.total_volume.toFixed(3),
+      s.entries.map(e => `${e.a_raw}x${e.b_raw}`).join(' | ')
+    ])
+  ]);
+  showToast('Scans CSV downloaded');
+}
+
+// ============================================================
+// USER DETAIL MODAL
+// ============================================================
+function openUserModal(email) {
+  const u = allUsers.find(x => x.email === email);
+  if (!u) { showToast('User not found — try refreshing', true); return; }
+
+  document.getElementById('umEmail').textContent = u.email;
+  document.getElementById('umMeta').textContent  =
+    `ID: ${u.id}  ·  Joined: ${new Date(u.createdAt).toLocaleDateString()}`;
+
+  document.getElementById('umInfo').innerHTML = `
+    <span class="k">Status</span>
+    <span class="v status-${esc(u.subscription.reason)}">${esc(u.subscription.reason.toUpperCase())}</span>
+    <span class="k">Days Left</span>
+    <span class="v">${u.subscription.daysLeft}</span>
+    <span class="k">Scans Today</span>
+    <span class="v">${u.scans.used} / ${u.scans.limit}</span>
+    <span class="k">Sub Active</span>
+    <span class="v">${u.subscription.active ? '✅ Yes' : '❌ No'}</span>
+  `;
+
+  const userScans = allScans.filter(s => s.user_email === email);
+  const umScans   = document.getElementById('umScans');
+  if (!userScans.length) {
+    umScans.innerHTML = '<div class="no-scans">No scans recorded for this user yet.</div>';
+  } else {
+    umScans.innerHTML = userScans.map(s => `
+      <div class="scan-row-mini">
+        <div class="scan-date">${new Date(s.scanned_at).toLocaleString()}</div>
+        <div class="scan-details">
+          <span>Entries: ${s.entries.length}</span>
+          <span>Volume: ${s.total_volume.toFixed(3)} ft³</span>
+        </div>
+        <div class="scan-entries">${s.entries.map(e => `${esc(e.a_raw)}×${esc(e.b_raw)}`).join(', ')}</div>
+      </div>`
+    ).join('');
+  }
+
+  document.getElementById('userModal').classList.add('active');
+}
+
+function closeUserModal() {
+  document.getElementById('userModal').classList.remove('active');
+}
+
+// Close user modal on backdrop click
+document.addEventListener('click', e => {
+  if (e.target === document.getElementById('userModal')) closeUserModal();
+});
+
+// ============================================================
+// ORIGINAL MODAL  (untouched)
+// ============================================================
 function closeModal() {
   document.getElementById('modal').classList.remove('active');
   pendingAction = null;
 }
-
 function confirmAction() {
   if (pendingAction) pendingAction();
 }
 
-// ================= TOAST =================
+// ============================================================
+// TOAST  (original, untouched)
+// ============================================================
 function showToast(msg, isError) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
-  toast.className = 'toast' + (isError ? ' error' : '') + ' show';
+  toast.className   = 'toast' + (isError ? ' error' : '') + ' show';
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ================= AUTO REFRESH =================
+// ============================================================
+// XSS GUARD — escapes text before injecting into innerHTML
+// ============================================================
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// AUTO REFRESH  (original, untouched)
+// ============================================================
 setInterval(() => {
   if (document.getElementById('dashboard').style.display !== 'none') {
     loadUsers();
     loadScans();
   }
-}, 30000); // Refresh every 30 seconds
+}, 30000);
 </script>
 </body>
 </html>
