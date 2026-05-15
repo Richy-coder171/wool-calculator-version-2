@@ -6,74 +6,74 @@
 <title>WoodApp Admin Dashboard</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#111;color:#f5e6c8;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+body{background:#0d0a14;color:#e8d8f5;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
 .container{max-width:1200px;margin:0 auto;padding:20px}
-header{background:#1a1005;border-bottom:2px solid #c47a1a;padding:20px;margin-bottom:20px;border-radius:12px}
-header h1{color:#e8a742;font-size:24px}
-header p{color:#7a5030;font-size:14px;margin-top:5px}
+header{background:#160d24;border-bottom:2px solid #7c3aed;padding:20px;margin-bottom:20px;border-radius:12px}
+header h1{color:#c084fc;font-size:24px}
+header p{color:#5b3a7a;font-size:14px;margin-top:5px}
 
 /* Login */
-.login-box{max-width:400px;margin:100px auto;background:#1a1005;border-radius:12px;padding:30px;border:1px solid #4a2a10}
-.login-box h2{color:#e8a742;text-align:center;margin-bottom:20px}
-.login-box input{width:100%;background:#120c04;border:1.5px solid #5a3515;border-radius:10px;padding:14px;color:#f5e6c8;font-size:15px;margin-bottom:12px;outline:none}
-.login-box input:focus{border-color:#c47a1a}
-.login-box button{width:100%;background:#c47a1a;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer}
+.login-box{max-width:400px;margin:100px auto;background:#160d24;border-radius:12px;padding:30px;border:1px solid #3b1f5e}
+.login-box h2{color:#c084fc;text-align:center;margin-bottom:20px}
+.login-box input{width:100%;background:#0e0819;border:1.5px solid #4a2575;border-radius:10px;padding:14px;color:#e8d8f5;font-size:15px;margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:#7c3aed}
+.login-box button{width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer}
 .login-box .error{color:#ff7070;font-size:13px;text-align:center;margin-top:10px;display:none}
 
 /* Stats Cards */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
-.stat-card{background:#1a1005;border-radius:12px;padding:20px;border:1px solid #4a2a10}
-.stat-card h3{color:#7a5030;font-size:13px;text-transform:uppercase;margin-bottom:8px}
-.stat-card .value{color:#e8a742;font-size:32px;font-weight:800}
+.stat-card{background:#160d24;border-radius:12px;padding:20px;border:1px solid #3b1f5e}
+.stat-card h3{color:#5b3a7a;font-size:13px;text-transform:uppercase;margin-bottom:8px}
+.stat-card .value{color:#c084fc;font-size:32px;font-weight:800}
 .stat-card .change{color:#6abf50;font-size:12px;margin-top:5px}
 
 /* Tables */
-.table-wrap{background:#1a1005;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #4a2a10;overflow-x:auto}
-.table-wrap h2{color:#e8a742;font-size:18px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
-.table-wrap h2 button{background:#c47a1a;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600}
+.table-wrap{background:#160d24;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #3b1f5e;overflow-x:auto}
+.table-wrap h2{color:#c084fc;font-size:18px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
+.table-wrap h2 button{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead tr{background:#1e1005}
-th{padding:12px 10px;color:#c8804a;text-align:left;font-weight:600}
-td{padding:10px;border-top:1px solid #2a1808}
-tr:hover{background:#150e04}
+thead tr{background:#12092a}
+th{padding:12px 10px;color:#a855f7;text-align:left;font-weight:600}
+td{padding:10px;border-top:1px solid #1e0f35}
+tr:hover{background:#100820}
 .status-active{color:#6abf50;font-weight:600}
 .status-expired{color:#ff7070;font-weight:600}
-.status-inactive{color:#7a5030}
+.status-inactive{color:#5b3a7a}
 
 /* Forms */
 .form-inline{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
-.form-inline input,.form-inline select{flex:1;min-width:150px;background:#120c04;border:1.5px solid #5a3515;border-radius:8px;padding:10px;color:#f5e6c8;font-size:13px;outline:none}
-.form-inline input:focus,.form-inline select:focus{border-color:#c47a1a}
-.form-inline button{background:#c47a1a;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.form-inline input,.form-inline select{flex:1;min-width:150px;background:#0e0819;border:1.5px solid #4a2575;border-radius:8px;padding:10px;color:#e8d8f5;font-size:13px;outline:none}
+.form-inline input:focus,.form-inline select:focus{border-color:#7c3aed}
+.form-inline button{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
 
 /* Actions */
-.action-btn{background:none;border:none;color:#c8904a;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px}
+.action-btn{background:none;border:none;color:#a855f7;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px}
 .action-btn.delete{color:#ff7070}
 
 /* Modal */
 .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
 .modal.active{display:flex}
-.modal-content{background:#1a1005;border-radius:12px;padding:25px;max-width:500px;width:90%;border:2px solid #c47a1a}
-.modal-content h3{color:#e8a742;margin-bottom:15px}
-.modal-content p{color:#c8904a;line-height:1.8;margin-bottom:15px}
+.modal-content{background:#160d24;border-radius:12px;padding:25px;max-width:500px;width:90%;border:2px solid #7c3aed}
+.modal-content h3{color:#c084fc;margin-bottom:15px}
+.modal-content p{color:#a855f7;line-height:1.8;margin-bottom:15px}
 .modal-content .buttons{display:flex;gap:10px;justify-content:flex-end}
 .modal-content button{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-.modal-content .confirm{background:#c47a1a;color:#fff}
-.modal-content .cancel{background:#2a1505;color:#c8904a;border:1px solid #4a2a10}
+.modal-content .confirm{background:#7c3aed;color:#fff}
+.modal-content .cancel{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e}
 
 /* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:#1a3a10;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform 0.3s;z-index:1001}
+.toast{position:fixed;bottom:20px;right:20px;background:#1a0e3a;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform 0.3s;z-index:1001}
 .toast.show{transform:translateY(0)}
 .toast.error{background:#3a0a0a;color:#ff7070}
 
 /* Refresh */
 .refresh-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.refresh-bar button{background:#2a1505;color:#c8904a;border:1px solid #4a2a10;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
-.refresh-bar .last-update{color:#5a3a18;font-size:12px}
+.refresh-bar button{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
+.refresh-bar .last-update{color:#3d2060;font-size:12px}
 
 /* Scan History Preview */
 .scan-preview{max-width:100px;max-height:60px;border-radius:4px;object-fit:cover}
-.entries-list{color:#7a5030;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.entries-list{color:#5b3a7a;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 <base target="_blank">
 </head>
@@ -333,7 +333,7 @@ async function loadScans() {
 
     const tbody = document.getElementById('scansTable');
     if (!scans.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#7a5030">No scans yet</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#5b3a7a">No scans yet</td></tr>';
       return;
     }
 
@@ -350,7 +350,7 @@ async function loadScans() {
     document.getElementById('statScans').textContent = scans.length;
     document.getElementById('lastScanUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
   } catch (err) {
-    document.getElementById('scansTable').innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7a5030">${err.message}</td></tr>`;
+    document.getElementById('scansTable').innerHTML = `<tr><td colspan="5" style="text-align:center;color:#5b3a7a">${err.message}</td></tr>`;
   }
 }
 
