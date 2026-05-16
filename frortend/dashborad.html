@@ -6,15 +6,18 @@
 <title>WoodApp Admin Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+/* ── RESET & BASE ───────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0d0a14;color:#e8d8f5;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
 .container{max-width:1200px;margin:0 auto;padding:20px}
+
+/* ── HEADER ─────────────────────────────────────────────── */
 header{background:#160d24;border-bottom:2px solid #7c3aed;padding:20px;margin-bottom:20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 header h1{color:#c084fc;font-size:24px}
 header p{color:#5b3a7a;font-size:14px;margin-top:5px}
-.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-/* Login */
+/* ── LOGIN ──────────────────────────────────────────────── */
 .login-box{max-width:400px;margin:100px auto;background:#160d24;border-radius:12px;padding:30px;border:1px solid #3b1f5e}
 .login-box h2{color:#c084fc;text-align:center;margin-bottom:20px}
 .login-box input{width:100%;background:#0e0819;border:1.5px solid #4a2575;border-radius:10px;padding:14px;color:#e8d8f5;font-size:15px;margin-bottom:12px;outline:none}
@@ -22,50 +25,83 @@ header p{color:#5b3a7a;font-size:14px;margin-top:5px}
 .login-box button{width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer}
 .login-box .error{color:#ff7070;font-size:13px;text-align:center;margin-top:10px;display:none}
 
-/* Stats Cards */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px}
+/* ── EXPIRY ALERT BANNER ─────────────────────────────────── */
+.alert-banner{background:#1e1005;border:1px solid #c47a1a;border-radius:10px;padding:12px 16px;margin-bottom:16px;color:#e8a742;font-size:13px;display:none}
+.alert-banner strong{color:#f5c842}
+
+/* ── STAT CARDS ─────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:15px;margin-bottom:20px}
 .stat-card{background:#160d24;border-radius:12px;padding:20px;border:1px solid #3b1f5e}
-.stat-card h3{color:#5b3a7a;font-size:13px;text-transform:uppercase;margin-bottom:8px}
-.stat-card .value{color:#c084fc;font-size:32px;font-weight:800}
+.stat-card h3{color:#5b3a7a;font-size:12px;text-transform:uppercase;margin-bottom:8px;letter-spacing:.04em}
+.stat-card .value{color:#c084fc;font-size:30px;font-weight:800}
 .stat-card .change{color:#6abf50;font-size:12px;margin-top:5px}
-.stat-card.revenue .value{color:#a78bfa;font-size:26px}
+.stat-card.revenue .value{color:#a78bfa;font-size:24px}
 .revenue-input-row{display:flex;align-items:center;gap:6px;margin-top:8px}
 .revenue-input-row input{width:70px;background:#0e0819;border:1px solid #4a2575;border-radius:6px;padding:4px 6px;color:#e8d8f5;font-size:12px;outline:none}
 .revenue-input-row label{color:#5b3a7a;font-size:11px}
 
-/* Charts */
+/* ── CHARTS ─────────────────────────────────────────────── */
 .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
-@media(max-width:700px){.charts-grid{grid-template-columns:1fr}}
-.chart-card{background:#160d24;border-radius:12px;padding:20px;border:1px solid #3b1f5e}
-.chart-card h2{color:#c084fc;font-size:16px;margin-bottom:15px}
-.chart-card canvas{max-height:220px}
+.charts-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-bottom:20px}
+@media(max-width:900px){.charts-grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.charts-grid,.charts-grid-3{grid-template-columns:1fr}}
+.chart-card{background:#160d24;border-radius:12px;padding:20px;border:1px solid #3b1f5e;position:relative}
+.chart-card h2{color:#c084fc;font-size:15px;margin-bottom:15px}
+.chart-card canvas{max-height:200px}
+.chart-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#3d2060;font-size:13px;pointer-events:none}
 
-/* Tables */
+/* ── TABLE WRAPS ─────────────────────────────────────────── */
 .table-wrap{background:#160d24;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #3b1f5e;overflow-x:auto}
 .table-wrap-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .table-wrap-header h2{color:#c084fc;font-size:18px}
 .table-wrap-header .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead tr{background:#12092a}
-th{padding:12px 10px;color:#a855f7;text-align:left;font-weight:600}
-td{padding:10px;border-top:1px solid #1e0f35}
+th{padding:11px 10px;color:#a855f7;text-align:left;font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:#c084fc}
+th.sort-asc::after{content:' ▲';font-size:10px}
+th.sort-desc::after{content:' ▼';font-size:10px}
+th.no-sort{cursor:default}
+th.no-sort:hover{color:#a855f7}
+td{padding:10px;border-top:1px solid #1e0f35;vertical-align:middle}
 tr:hover{background:#100820}
+tr.row-expiring{background:#1a1005 !important}
+tr.row-expiring td:nth-child(4){color:#f5a623;font-weight:700}
 .status-active{color:#6abf50;font-weight:600}
 .status-expired{color:#ff7070;font-weight:600}
 .status-inactive{color:#5b3a7a}
 
-/* Forms */
-.form-inline{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+/* ── BULK BAR ────────────────────────────────────────────── */
+.bulk-bar{background:#1a0e2e;border:1px solid #4a2575;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:12px;flex-wrap:wrap}
+.bulk-bar.active{display:flex}
+.bulk-bar span{color:#a855f7;font-size:13px;font-weight:600}
+.bulk-bar button{background:#7c3aed;color:#fff;border:none;border-radius:7px;padding:7px 13px;font-size:12px;cursor:pointer;font-weight:600}
+.bulk-bar button.danger{background:#7a1010}
+.bulk-bar button.clear{background:#2a1a4e;border:1px solid #3b1f5e}
+
+/* ── PAGINATION ──────────────────────────────────────────── */
+.pagination{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:#5b3a7a}
+.pagination button{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e;border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer}
+.pagination button:disabled{opacity:.35;cursor:default}
+
+/* ── FORMS ───────────────────────────────────────────────── */
+.form-inline{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
 .form-inline input,.form-inline select{flex:1;min-width:150px;background:#0e0819;border:1.5px solid #4a2575;border-radius:8px;padding:10px;color:#e8d8f5;font-size:13px;outline:none}
 .form-inline input:focus,.form-inline select:focus{border-color:#7c3aed}
 .form-inline button{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.form-note{color:#5b3a7a;font-size:11px;margin-bottom:8px}
 
-/* Search */
-.search-bar{width:100%;background:#0e0819;border:1.5px solid #4a2575;border-radius:8px;padding:9px 12px;color:#e8d8f5;font-size:13px;outline:none;margin-bottom:12px}
+/* ── SEARCH & DATE FILTER ────────────────────────────────── */
+.search-bar{width:100%;background:#0e0819;border:1.5px solid #4a2575;border-radius:8px;padding:9px 12px;color:#e8d8f5;font-size:13px;outline:none;margin-bottom:10px}
 .search-bar:focus{border-color:#7c3aed}
+.date-filter{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.date-filter label{color:#5b3a7a;font-size:12px}
+.date-filter input{background:#0e0819;border:1.5px solid #4a2575;border-radius:7px;padding:7px 10px;color:#e8d8f5;font-size:12px;outline:none}
+.date-filter input:focus{border-color:#7c3aed}
+.date-filter button{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e;border-radius:7px;padding:7px 12px;font-size:12px;cursor:pointer}
 
-/* Buttons */
-.action-btn{background:none;border:none;color:#a855f7;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px;margin-right:4px}
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.action-btn{background:none;border:none;color:#a855f7;cursor:pointer;font-size:12px;text-decoration:underline;padding:2px 3px}
 .action-btn.delete{color:#ff7070}
 .action-btn.view{color:#60a5fa}
 .btn-sm{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
@@ -73,7 +109,25 @@ tr:hover{background:#100820}
 .btn-export{background:#1a0e2e;color:#6abf50;border:1px solid #2a4020;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap}
 .btn-export:hover{background:#1a2e1a}
 
-/* Confirm Modal (original) */
+/* ── LEADERBOARD ─────────────────────────────────────────── */
+.leaderboard-list{list-style:none;padding:0}
+.leaderboard-list li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #1e0f35;font-size:13px}
+.leaderboard-list li:first-child{border-top:none}
+.lb-rank{color:#5b3a7a;font-size:11px;width:22px;text-align:right;flex-shrink:0}
+.lb-email{color:#e8d8f5;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-count{color:#c084fc;font-weight:700;font-size:13px;flex-shrink:0}
+.lb-bar-wrap{flex:1;background:#1e0f35;border-radius:4px;height:6px;overflow:hidden}
+.lb-bar{background:#7c3aed;height:6px;border-radius:4px;transition:width .4s}
+
+/* ── AUDIT LOG ───────────────────────────────────────────── */
+.audit-log{max-height:200px;overflow-y:auto;font-size:12px}
+.audit-entry{padding:6px 0;border-top:1px solid #1e0f35;color:#7a5a9a;display:flex;gap:10px}
+.audit-entry:first-child{border-top:none}
+.audit-time{color:#3d2060;white-space:nowrap;flex-shrink:0}
+.audit-msg{color:#c8b0e8}
+.audit-empty{color:#3d2060;font-size:12px;padding:10px 0;text-align:center}
+
+/* ── CONFIRM MODAL (original) ────────────────────────────── */
 .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
 .modal.active{display:flex}
 .modal-content{background:#160d24;border-radius:12px;padding:25px;max-width:500px;width:90%;border:2px solid #7c3aed}
@@ -84,41 +138,43 @@ tr:hover{background:#100820}
 .modal-content .confirm{background:#7c3aed;color:#fff}
 .modal-content .cancel{background:#1a0e2e;color:#a855f7;border:1px solid #3b1f5e}
 
-/* User Detail Modal */
+/* ── USER DETAIL MODAL ───────────────────────────────────── */
 .user-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1001;align-items:center;justify-content:center;padding:20px}
 .user-modal.active{display:flex}
-.user-modal-content{background:#160d24;border-radius:12px;padding:25px;max-width:720px;width:100%;border:2px solid #7c3aed;max-height:85vh;overflow-y:auto;position:relative}
-.user-modal-content h3{color:#c084fc;margin-bottom:6px;font-size:18px;padding-right:30px}
+.user-modal-content{background:#160d24;border-radius:12px;padding:25px;max-width:740px;width:100%;border:2px solid #7c3aed;max-height:88vh;overflow-y:auto;position:relative}
+.user-modal-content h3{color:#c084fc;margin-bottom:5px;font-size:18px;padding-right:32px}
 .user-modal-meta{color:#5b3a7a;font-size:12px;margin-bottom:16px}
-.user-modal-section{margin-bottom:16px}
-.user-modal-section h4{color:#a855f7;font-size:12px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.user-modal-section{margin-bottom:18px}
+.user-modal-section h4{color:#a855f7;font-size:11px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
 .user-modal-kv{display:grid;grid-template-columns:140px 1fr;gap:5px 10px;font-size:13px}
 .user-modal-kv .k{color:#5b3a7a}
 .user-modal-kv .v{color:#e8d8f5}
-.user-modal-close{position:absolute;top:20px;right:20px;background:none;border:none;color:#a855f7;font-size:20px;cursor:pointer;line-height:1}
+.user-modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:#a855f7;font-size:20px;cursor:pointer;line-height:1}
 .scan-row-mini{background:#100820;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
 .scan-row-mini .scan-date{color:#c084fc;font-weight:600;margin-bottom:4px}
 .scan-row-mini .scan-details{color:#7a5a9a;display:flex;gap:16px;flex-wrap:wrap}
 .scan-row-mini .scan-entries{color:#5b3a7a;margin-top:4px;font-size:11px;word-break:break-all}
 .no-scans{color:#3d2060;font-size:13px;padding:16px 0;text-align:center}
+.um-chart-wrap{background:#100820;border-radius:8px;padding:14px;margin-bottom:12px}
+.um-chart-wrap canvas{max-height:160px}
 
-/* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:#1a0e3a;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform 0.3s;z-index:1100}
+/* ── TOAST ───────────────────────────────────────────────── */
+.toast{position:fixed;bottom:20px;right:20px;background:#1a0e3a;color:#6abf50;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);transition:transform .3s;z-index:1200}
 .toast.show{transform:translateY(0)}
 .toast.error{background:#3a0a0a;color:#ff7070}
 
-/* Refresh */
+/* ── MISC ────────────────────────────────────────────────── */
 .last-update{color:#3d2060;font-size:12px;margin-right:6px}
-
-/* Scan entries col */
 .entries-list{color:#5b3a7a;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.section-title{color:#c084fc;font-size:18px;margin-bottom:12px}
+input[type=checkbox]{accent-color:#7c3aed;width:14px;height:14px;cursor:pointer}
 </style>
 <base target="_blank">
 </head>
 <body>
 <div id="app">
 
-  <!-- LOGIN -->
+  <!-- ═══════════ LOGIN ═══════════ -->
   <div id="loginScreen" class="login-box">
     <h2>🔐 Admin Dashboard</h2>
     <input id="apiUrl" type="text" placeholder="API URL (e.g. http://localhost:3001)" value="http://localhost:3001"/>
@@ -127,9 +183,10 @@ tr:hover{background:#100820}
     <p id="loginError" class="error">Invalid admin key</p>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- ═══════════ DASHBOARD ═══════════ -->
   <div id="dashboard" style="display:none">
     <div class="container">
+
       <header>
         <div>
           <h1>🪵 WoodApp Admin Dashboard</h1>
@@ -140,6 +197,9 @@ tr:hover{background:#100820}
           <button class="btn-export" onclick="exportScansCSV()">⬇ Scans CSV</button>
         </div>
       </header>
+
+      <!-- EXPIRY ALERT BANNER -->
+      <div id="alertBanner" class="alert-banner"></div>
 
       <!-- STATS -->
       <div class="stats">
@@ -154,7 +214,12 @@ tr:hover{background:#100820}
           <div class="change">Paying customers</div>
         </div>
         <div class="stat-card">
-          <h3>Expired Today</h3>
+          <h3>Expiring Soon</h3>
+          <div class="value" id="statExpiringSoon" style="color:#f5a623">0</div>
+          <div class="change" style="color:#c47a1a">Within 7 days</div>
+        </div>
+        <div class="stat-card">
+          <h3>Expired</h3>
           <div class="value" id="statExpired">0</div>
           <div class="change">Need renewal</div>
         </div>
@@ -173,29 +238,47 @@ tr:hover{background:#100820}
         </div>
       </div>
 
-      <!-- CHARTS -->
+      <!-- CHARTS ROW 1: Scan trend + Subscription breakdown -->
       <div class="charts-grid">
         <div class="chart-card">
           <h2>📈 Scan Trend (last 14 days)</h2>
           <canvas id="chartScans"></canvas>
+          <div class="chart-empty" id="emptyScans" style="display:none">No scan data yet</div>
         </div>
         <div class="chart-card">
           <h2>📊 Subscriptions by Join Date</h2>
           <canvas id="chartSubs"></canvas>
+          <div class="chart-empty" id="emptySubs" style="display:none">No user data yet</div>
         </div>
       </div>
 
-      <!-- ACTIVATE USER -->
+      <!-- CHARTS ROW 2: Monthly revenue trend -->
+      <div class="charts-grid-3">
+        <div class="chart-card" style="grid-column:1/-1">
+          <h2>💰 Monthly Revenue Trend (last 30 days)</h2>
+          <canvas id="chartRevenue"></canvas>
+          <div class="chart-empty" id="emptyRevenue" style="display:none">No data yet</div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIVATE + SCAN LIMIT OVERRIDE -->
       <div class="table-wrap">
-        <h2 style="color:#c084fc;font-size:18px;margin-bottom:12px">⚡ Quick Activate</h2>
+        <div class="section-title">⚡ Quick Activate</div>
         <div class="form-inline">
           <input id="actEmail" type="email" placeholder="User email"/>
           <input id="actDays" type="number" placeholder="Days (default 30)" value="30"/>
           <button onclick="activateUser()">Activate Subscription</button>
         </div>
+        <div class="section-title" style="font-size:15px;margin-top:8px">🎛 Scan Limit Override</div>
+        <p class="form-note">Requires a /api/admin/set-limit endpoint in your backend.</p>
+        <div class="form-inline">
+          <input id="limitEmail" type="email" placeholder="User email"/>
+          <input id="limitVal" type="number" placeholder="New daily scan limit" value="10" min="1"/>
+          <button onclick="setScanLimit()">Set Limit</button>
+        </div>
       </div>
 
-      <!-- USERS TABLE -->
+      <!-- ALL USERS TABLE -->
       <div class="table-wrap">
         <div class="table-wrap-header">
           <h2>👥 All Users</h2>
@@ -204,19 +287,54 @@ tr:hover{background:#100820}
             <button class="btn-sm" onclick="loadUsers()">🔄 Refresh</button>
           </div>
         </div>
-        <input id="userSearch" class="search-bar" type="text" placeholder="🔍 Search by email or status…" oninput="filterUsers()"/>
+
+        <!-- Search -->
+        <input id="userSearch" class="search-bar" type="text"
+               placeholder="🔍 Search by email or status…" oninput="onSearch()"/>
+
+        <!-- Bulk action bar -->
+        <div id="bulkBar" class="bulk-bar">
+          <span id="bulkCount">0 selected</span>
+          <button onclick="bulkExtend()">Extend 30 days</button>
+          <button class="danger" onclick="bulkDelete()">Delete Selected</button>
+          <button class="clear" onclick="clearSelection()">Clear</button>
+        </div>
+
         <table>
           <thead>
             <tr>
-              <th>ID</th><th>Email</th><th>Status</th><th>Days Left</th>
-              <th>Scans Today</th><th>Created</th><th>Actions</th>
+              <th class="no-sort"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"/></th>
+              <th onclick="sortBy('id')">ID</th>
+              <th onclick="sortBy('email')">Email</th>
+              <th onclick="sortBy('status')">Status</th>
+              <th onclick="sortBy('daysLeft')">Days Left</th>
+              <th onclick="sortBy('scansUsed')">Scans Today</th>
+              <th onclick="sortBy('createdAt')">Created</th>
+              <th class="no-sort">Actions</th>
             </tr>
           </thead>
           <tbody id="usersTable"></tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <button id="pagePrev" onclick="changePage(-1)" disabled>← Prev</button>
+          <span id="pageInfo">Page 1 of 1</span>
+          <button id="pageNext" onclick="changePage(1)" disabled>Next →</button>
+        </div>
       </div>
 
-      <!-- SCAN HISTORY -->
+      <!-- TOP USERS LEADERBOARD -->
+      <div class="table-wrap">
+        <div class="table-wrap-header">
+          <h2>🏆 Top Users by Scans</h2>
+        </div>
+        <ul class="leaderboard-list" id="leaderboardList">
+          <li style="color:#3d2060;font-size:12px;text-align:center;padding:10px">No data yet</li>
+        </ul>
+      </div>
+
+      <!-- RECENT SCANS TABLE -->
       <div class="table-wrap">
         <div class="table-wrap-header">
           <h2>📋 Recent Scans</h2>
@@ -225,21 +343,44 @@ tr:hover{background:#100820}
             <button class="btn-sm" onclick="loadScans()">🔄 Refresh</button>
           </div>
         </div>
+        <!-- Date range filter -->
+        <div class="date-filter">
+          <label>From</label>
+          <input type="date" id="scanFrom" onchange="filterScans()"/>
+          <label>To</label>
+          <input type="date" id="scanTo" onchange="filterScans()"/>
+          <button onclick="clearDateFilter()">Clear</button>
+        </div>
         <table>
           <thead>
             <tr>
-              <th>User</th><th>Date</th><th>Entries</th><th>Total Volume</th><th>Measurements</th>
+              <th class="no-sort">User</th>
+              <th class="no-sort">Date</th>
+              <th class="no-sort">Entries</th>
+              <th class="no-sort">Total Volume</th>
+              <th class="no-sort">Measurements</th>
             </tr>
           </thead>
           <tbody id="scansTable"></tbody>
         </table>
       </div>
 
-    </div>
-  </div>
-</div>
+      <!-- SESSION AUDIT LOG -->
+      <div class="table-wrap">
+        <div class="table-wrap-header">
+          <h2>📝 Session Audit Log</h2>
+          <button class="btn-sm" onclick="clearAuditLog()">Clear</button>
+        </div>
+        <div class="audit-log" id="auditLog">
+          <div class="audit-empty">No actions yet this session</div>
+        </div>
+      </div>
 
-<!-- CONFIRM MODAL (original — untouched) -->
+    </div><!-- /container -->
+  </div><!-- /dashboard -->
+</div><!-- /app -->
+
+<!-- ═══════════ CONFIRM MODAL (original — untouched) ═══════════ -->
 <div id="modal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">Confirm Action</h3>
@@ -251,7 +392,7 @@ tr:hover{background:#100820}
   </div>
 </div>
 
-<!-- USER DETAIL MODAL (new) -->
+<!-- ═══════════ USER DETAIL MODAL ═══════════ -->
 <div id="userModal" class="user-modal">
   <div class="user-modal-content">
     <button class="user-modal-close" onclick="closeUserModal()">✕</button>
@@ -262,34 +403,64 @@ tr:hover{background:#100820}
       <div class="user-modal-kv" id="umInfo"></div>
     </div>
     <div class="user-modal-section">
+      <h4>Scan Volume Over Time</h4>
+      <div class="um-chart-wrap">
+        <canvas id="chartUserScans"></canvas>
+      </div>
+    </div>
+    <div class="user-modal-section">
       <h4>Scan History</h4>
       <div id="umScans"></div>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div id="toast" class="toast">Action completed successfully</div>
+<!-- ═══════════ TOAST ═══════════ -->
+<div id="toast" class="toast"></div>
 
 <script>
-// ============================================================
-// CONFIG
-// ============================================================
-let API_BASE = '';
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   CONFIG & STATE
+═══════════════════════════════════════════════════════════ */
+let API_BASE  = '';
 let ADMIN_KEY = '';
 let pendingAction = null;
 
-// Global caches — populated on load & refresh
+// Data caches
 let allUsers = [];
 let allScans = [];
 
-// Chart instances — destroyed before redraw to prevent canvas reuse errors
-let chartScansInst = null;
-let chartSubsInst  = null;
+// Audit log (session-only)
+let auditLog = [];
 
-// ============================================================
-// AUTH  (original, untouched)
-// ============================================================
+// Users table state
+let sortCol  = 'id';
+let sortDir  = 'asc';
+let currentPage = 0;
+const PAGE_SIZE = 20;
+let selectedEmails = new Set();
+
+// Chart instances (destroyed before redraw)
+let chartScansInst    = null;
+let chartSubsInst     = null;
+let chartRevenueInst  = null;
+let chartUserScansInst = null;
+
+/* ═══════════════════════════════════════════════════════════
+   SESSION PERSISTENCE — remember API URL (never key)
+═══════════════════════════════════════════════════════════ */
+(function restoreApiUrl() {
+  try {
+    const saved = localStorage.getItem('woodapp_api_url');
+    if (saved) document.getElementById('apiUrl').value = saved;
+  } catch(_) {}
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH  ← original, untouched
+═══════════════════════════════════════════════════════════ */
 function login() {
   API_BASE  = document.getElementById('apiUrl').value.trim();
   ADMIN_KEY = document.getElementById('adminKey').value.trim();
@@ -299,6 +470,9 @@ function login() {
   if (!API_BASE.includes('/api')) {
     API_BASE = API_BASE.replace(/\/$/, '') + '/api';
   }
+
+  // Save URL for next visit (no key stored)
+  try { localStorage.setItem('woodapp_api_url', document.getElementById('apiUrl').value.trim()); } catch(_) {}
 
   fetch(`${API_BASE}/admin/users?adminKey=${encodeURIComponent(ADMIN_KEY)}`)
     .then(r => {
@@ -317,81 +491,254 @@ function login() {
 
 function showError(msg) {
   const el = document.getElementById('loginError');
-  el.textContent  = msg;
+  el.textContent   = msg;
   el.style.display = 'block';
 }
 
-// ============================================================
-// USERS  (fetch logic original; rendering extracted so search works)
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUT  /  → focus Quick Activate
+═══════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key !== '/') return;
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (document.getElementById('modal').classList.contains('active')) return;
+  if (document.getElementById('userModal').classList.contains('active')) return;
+  e.preventDefault();
+  document.getElementById('actEmail').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   LOAD USERS  ← fetch identical to original
+═══════════════════════════════════════════════════════════ */
 async function loadUsers() {
   try {
     const res = await fetch(`${API_BASE}/admin/users?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     allUsers = await res.json();
 
-    // Stats — identical to original
-    document.getElementById('statUsers').textContent   = allUsers.length;
-    document.getElementById('statActive').textContent  = allUsers.filter(u => u.subscription.active).length;
-    document.getElementById('statExpired').textContent = allUsers.filter(u => u.subscription.reason === 'expired').length;
-    updateRevenue();
+    // Prune selections that no longer exist
+    selectedEmails = new Set([...selectedEmails].filter(e => allUsers.some(u => u.email === e)));
 
-    // Re-apply search so a live filter isn't blown away by auto-refresh
-    filterUsers();
+    // Stats
+    const active      = allUsers.filter(u => u.subscription.active);
+    const expiringSoon = allUsers.filter(u => u.subscription.active && u.subscription.daysLeft > 0 && u.subscription.daysLeft <= 7);
+    const expired     = allUsers.filter(u => u.subscription.reason === 'expired');
+
+    document.getElementById('statUsers').textContent       = allUsers.length;
+    document.getElementById('statActive').textContent      = active.length;
+    document.getElementById('statExpiringSoon').textContent = expiringSoon.length;
+    document.getElementById('statExpired').textContent     = expired.length;
+    updateRevenue();
+    updateExpiryBanner(expiringSoon);
+
+    // Re-apply current view (search + sort + pagination)
+    applyUsersView();
 
     document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
     drawSubsChart();
+    drawRevenueChart();
+    renderLeaderboard();
   } catch (err) {
     showToast('Failed to load users: ' + err.message, true);
   }
 }
 
-// Renders whatever subset of users is passed in — keeps action buttons working
+/* ═══════════════════════════════════════════════════════════
+   EXPIRY ALERT BANNER
+═══════════════════════════════════════════════════════════ */
+function updateExpiryBanner(expiringSoon) {
+  const banner = document.getElementById('alertBanner');
+  if (!expiringSoon.length) { banner.style.display = 'none'; return; }
+  const names = expiringSoon.slice(0, 5).map(u => esc(u.email)).join(', ');
+  const more  = expiringSoon.length > 5 ? ` +${expiringSoon.length - 5} more` : '';
+  banner.innerHTML = `⚠️ <strong>${expiringSoon.length} subscription${expiringSoon.length > 1 ? 's' : ''} expiring within 7 days:</strong> ${names}${more}`;
+  banner.style.display = 'block';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   USERS TABLE — sort → filter → paginate → render
+═══════════════════════════════════════════════════════════ */
+function applyUsersView() {
+  // 1. Filter
+  const q = (document.getElementById('userSearch').value || '').trim().toLowerCase();
+  let list = q
+    ? allUsers.filter(u => u.email.toLowerCase().includes(q) || u.subscription.reason.toLowerCase().includes(q))
+    : [...allUsers];
+
+  // 2. Sort
+  list.sort((a, b) => {
+    let av, bv;
+    switch (sortCol) {
+      case 'id':        av = a.id;                        bv = b.id;                        break;
+      case 'email':     av = a.email.toLowerCase();       bv = b.email.toLowerCase();       break;
+      case 'status':    av = a.subscription.reason;       bv = b.subscription.reason;       break;
+      case 'daysLeft':  av = a.subscription.daysLeft;     bv = b.subscription.daysLeft;     break;
+      case 'scansUsed': av = a.scans.used;                bv = b.scans.used;                break;
+      case 'createdAt': av = new Date(a.createdAt);       bv = new Date(b.createdAt);       break;
+      default:          av = a.id;                        bv = b.id;
+    }
+    if (av < bv) return sortDir === 'asc' ? -1 :  1;
+    if (av > bv) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+
+  // 3. Paginate
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages - 1);
+  const pageSlice = list.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
+  document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${totalPages}`;
+  document.getElementById('pagePrev').disabled = currentPage === 0;
+  document.getElementById('pageNext').disabled = currentPage >= totalPages - 1;
+
+  // 4. Update sort indicators on headers
+  document.querySelectorAll('th[onclick]').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    const col = th.getAttribute('onclick').replace("sortBy('", '').replace("')", '');
+    if (col === sortCol) th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+  });
+
+  // 5. Render
+  renderUsers(pageSlice);
+  updateBulkBar();
+}
+
 function renderUsers(list) {
   const tbody = document.getElementById('usersTable');
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#5b3a7a">No users found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#5b3a7a;padding:20px">No users found</td></tr>';
     return;
   }
   tbody.innerHTML = list.map(u => {
-    // Use JSON.stringify so emails with special chars are safe in onclick attrs
-    const emailJS = JSON.stringify(u.email);
-    return `
-      <tr>
-        <td>${esc(String(u.id))}</td>
-        <td>${esc(u.email)}</td>
-        <td class="status-${esc(u.subscription.reason)}">${esc(u.subscription.reason.toUpperCase())}</td>
-        <td>${u.subscription.daysLeft}</td>
-        <td>${u.scans.used} / ${u.scans.limit}</td>
-        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-        <td>
-          <button class="action-btn view"   onclick="openUserModal(${emailJS})">View</button>
-          <button class="action-btn"        onclick="extendUser(${emailJS})">Extend</button>
-          <button class="action-btn delete" onclick="deleteUser(${emailJS})">Delete</button>
-        </td>
-      </tr>`;
+    const emailJS   = JSON.stringify(u.email);
+    const checked   = selectedEmails.has(u.email) ? 'checked' : '';
+    const expiring  = u.subscription.active && u.subscription.daysLeft > 0 && u.subscription.daysLeft <= 7;
+    const rowClass  = expiring ? 'row-expiring' : '';
+    return `<tr class="${rowClass}">
+      <td><input type="checkbox" ${checked} onchange="toggleSelect(${emailJS},this)"/></td>
+      <td>${esc(String(u.id))}</td>
+      <td>${esc(u.email)}</td>
+      <td class="status-${esc(u.subscription.reason)}">${esc(u.subscription.reason.toUpperCase())}</td>
+      <td>${u.subscription.daysLeft}</td>
+      <td>${u.scans.used} / ${u.scans.limit}</td>
+      <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+      <td>
+        <button class="action-btn view"   onclick="openUserModal(${emailJS})">View</button>
+        <button class="action-btn"        onclick="extendUser(${emailJS})">Extend</button>
+        <button class="action-btn delete" onclick="deleteUser(${emailJS})">Delete</button>
+      </td>
+    </tr>`;
   }).join('');
 }
 
-// Live search — purely client-side, never touches the backend
-function filterUsers() {
-  const q = (document.getElementById('userSearch').value || '').trim().toLowerCase();
-  if (!q) { renderUsers(allUsers); return; }
-  renderUsers(allUsers.filter(u =>
-    u.email.toLowerCase().includes(q) ||
-    u.subscription.reason.toLowerCase().includes(q)
-  ));
+function onSearch() {
+  currentPage = 0;   // reset to page 1 on new search
+  applyUsersView();
 }
 
-// ============================================================
-// ACTIVATE / EXTEND  (original, untouched)
-// ============================================================
+function sortBy(col) {
+  if (sortCol === col) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortCol = col;
+    sortDir = 'asc';
+  }
+  applyUsersView();
+}
+
+function changePage(dir) {
+  currentPage += dir;
+  applyUsersView();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BULK ACTIONS
+═══════════════════════════════════════════════════════════ */
+function toggleSelect(email, cb) {
+  if (cb.checked) selectedEmails.add(email);
+  else            selectedEmails.delete(email);
+  updateBulkBar();
+  // Sync "select all" checkbox
+  const visibleEmails = [...document.querySelectorAll('#usersTable input[type=checkbox]')].map(c => c.closest('tr').querySelector('td:nth-child(3)')?.textContent?.trim()).filter(Boolean);
+  document.getElementById('selectAll').checked = visibleEmails.length > 0 && visibleEmails.every(e => selectedEmails.has(e));
+}
+
+function toggleSelectAll(masterCb) {
+  document.querySelectorAll('#usersTable input[type=checkbox]').forEach(cb => {
+    cb.checked = masterCb.checked;
+    // Find email from same row's 3rd td
+    const row = cb.closest('tr');
+    const email = row ? row.cells[2]?.textContent?.trim() : null;
+    if (email) {
+      if (masterCb.checked) selectedEmails.add(email);
+      else                  selectedEmails.delete(email);
+    }
+  });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  if (selectedEmails.size > 0) {
+    bar.classList.add('active');
+    document.getElementById('bulkCount').textContent = `${selectedEmails.size} selected`;
+  } else {
+    bar.classList.remove('active');
+  }
+}
+
+function clearSelection() {
+  selectedEmails.clear();
+  document.getElementById('selectAll').checked = false;
+  applyUsersView();
+}
+
+async function bulkExtend() {
+  if (!selectedEmails.size) return;
+  const emails = [...selectedEmails];
+  let success = 0, failed = 0;
+  for (const email of emails) {
+    try {
+      const res = await fetch(`${API_BASE}/admin/extend`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: ADMIN_KEY, email, days: 30 })
+      });
+      const data = await res.json();
+      if (data.success) success++;
+      else failed++;
+    } catch { failed++; }
+  }
+  addAudit(`Bulk extend (30 days) — ${success} succeeded, ${failed} failed. Emails: ${emails.join(', ')}`);
+  showToast(`Extended ${success} user(s)${failed ? `, ${failed} failed` : ''}`);
+  clearSelection();
+  loadUsers();
+}
+
+function bulkDelete() {
+  if (!selectedEmails.size) return;
+  const emails = [...selectedEmails];
+  pendingAction = () => {
+    emails.forEach(e => addAudit(`Bulk delete attempted: ${e} (endpoint needed in backend)`));
+    showToast(`Bulk delete: endpoint needed in backend`);
+    clearSelection();
+    closeModal();
+  };
+  document.getElementById('modalTitle').textContent = 'Bulk Delete';
+  document.getElementById('modalBody').textContent  = `Delete ${emails.length} user(s)? This cannot be undone.`;
+  document.getElementById('modal').classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACTIVATE / EXTEND  ← original, untouched
+═══════════════════════════════════════════════════════════ */
 async function activateUser() {
   const email = document.getElementById('actEmail').value.trim();
   const days  = parseInt(document.getElementById('actDays').value) || 30;
-
   if (!email) { showToast('Please enter an email', true); return; }
-
   try {
     const res = await fetch(`${API_BASE}/admin/extend`, {
       method:  'POST',
@@ -401,6 +748,7 @@ async function activateUser() {
     const data = await res.json();
     if (data.success) {
       showToast(`Activated ${email} for ${days} days`);
+      addAudit(`Activated ${email} for ${days} days`);
       document.getElementById('actEmail').value = '';
       loadUsers();
     } else {
@@ -416,13 +764,42 @@ function extendUser(email) {
   document.getElementById('actDays').value  = '30';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   showToast(`Ready to extend ${email}`);
+  addAudit(`Opened extend form for ${email}`);
 }
 
-// ============================================================
-// DELETE USER  (original, untouched)
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   SCAN LIMIT OVERRIDE  ← requires /admin/set-limit in backend
+═══════════════════════════════════════════════════════════ */
+async function setScanLimit() {
+  const email = document.getElementById('limitEmail').value.trim();
+  const limit = parseInt(document.getElementById('limitVal').value);
+  if (!email || !limit) { showToast('Fill in email and limit', true); return; }
+  try {
+    const res = await fetch(`${API_BASE}/admin/set-limit`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ adminKey: ADMIN_KEY, email, limit })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`Scan limit for ${email} set to ${limit}`);
+      addAudit(`Set scan limit for ${email} to ${limit}`);
+      document.getElementById('limitEmail').value = '';
+      loadUsers();
+    } else {
+      showToast(data.error || 'Backend endpoint not yet available', true);
+    }
+  } catch (err) {
+    showToast('Endpoint not available: ' + err.message, true);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DELETE USER  ← original, untouched
+═══════════════════════════════════════════════════════════ */
 function deleteUser(email) {
   pendingAction = () => {
+    addAudit(`Delete attempted: ${email} (endpoint needed in backend)`);
     showToast(`Delete user ${email} - endpoint needed in backend`);
     closeModal();
   };
@@ -431,72 +808,128 @@ function deleteUser(email) {
   document.getElementById('modal').classList.add('active');
 }
 
-// ============================================================
-// SCAN HISTORY  (original fetch & render untouched; cache added)
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   LOAD SCANS  ← fetch identical to original
+═══════════════════════════════════════════════════════════ */
 async function loadScans() {
   try {
     const res = await fetch(`${API_BASE}/admin/scans?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
     if (!res.ok) throw new Error('Failed to load scans');
     allScans = await res.json();
 
-    const tbody = document.getElementById('scansTable');
-    if (!allScans.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#5b3a7a">No scans yet</td></tr>';
-    } else {
-      tbody.innerHTML = allScans.map(s => `
-        <tr>
-          <td>${esc(s.user_email)}</td>
-          <td>${new Date(s.scanned_at).toLocaleString()}</td>
-          <td>${s.entries.length}</td>
-          <td>${s.total_volume.toFixed(3)} ft³</td>
-          <td class="entries-list">${s.entries.map(e => `${esc(e.a_raw)}×${esc(e.b_raw)}`).join(', ')}</td>
-        </tr>`
-      ).join('');
-    }
-
     document.getElementById('statScans').textContent      = allScans.length;
     document.getElementById('lastScanUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
+    filterScans();       // apply current date filter
     drawScansChart();
+    renderLeaderboard();
   } catch (err) {
     document.getElementById('scansTable').innerHTML =
       `<tr><td colspan="5" style="text-align:center;color:#5b3a7a">${esc(err.message)}</td></tr>`;
   }
 }
 
-// ============================================================
-// REVENUE TRACKER
-// ============================================================
+/* ─── Scans date filter & render ─── */
+function filterScans() {
+  const from = document.getElementById('scanFrom').value;
+  const to   = document.getElementById('scanTo').value;
+  let list   = allScans;
+  if (from) list = list.filter(s => s.scanned_at && s.scanned_at.slice(0,10) >= from);
+  if (to)   list = list.filter(s => s.scanned_at && s.scanned_at.slice(0,10) <= to);
+  renderScans(list);
+}
+
+function clearDateFilter() {
+  document.getElementById('scanFrom').value = '';
+  document.getElementById('scanTo').value   = '';
+  renderScans(allScans);
+}
+
+function renderScans(list) {
+  const tbody = document.getElementById('scansTable');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#5b3a7a">No scans found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(s => `
+    <tr>
+      <td>${esc(s.user_email)}</td>
+      <td>${new Date(s.scanned_at).toLocaleString()}</td>
+      <td>${s.entries.length}</td>
+      <td>${s.total_volume.toFixed(3)} ft³</td>
+      <td class="entries-list">${s.entries.map(e => `${esc(e.a_raw)}×${esc(e.b_raw)}`).join(', ')}</td>
+    </tr>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REVENUE TRACKER
+═══════════════════════════════════════════════════════════ */
 function updateRevenue() {
   const price  = parseFloat(document.getElementById('revenuePrice').value) || 0;
   const active = allUsers.filter(u => u.subscription.active).length;
   document.getElementById('statRevenue').textContent = '$' + (price * active).toFixed(2);
+  // Redraw revenue chart if price changes
+  drawRevenueChart();
 }
 
-// ============================================================
-// ANALYTICS CHARTS
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   LEADERBOARD
+═══════════════════════════════════════════════════════════ */
+function renderLeaderboard() {
+  // Group scans by user
+  const counts = {};
+  allScans.forEach(s => { counts[s.user_email] = (counts[s.user_email] || 0) + 1; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+  const max    = sorted[0]?.[1] || 1;
+
+  const ul = document.getElementById('leaderboardList');
+  if (!sorted.length) {
+    ul.innerHTML = '<li style="color:#3d2060;font-size:12px;text-align:center;padding:10px">No scan data yet</li>';
+    return;
+  }
+  ul.innerHTML = sorted.map(([email, count], i) => `
+    <li>
+      <span class="lb-rank">${i + 1}.</span>
+      <span class="lb-email">${esc(email)}</span>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(count/max*100)}%"></div></div>
+      <span class="lb-count">${count}</span>
+    </li>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CHARTS
+═══════════════════════════════════════════════════════════ */
 function getLast14Days() {
   const days = [];
   for (let i = 13; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(d.toISOString().slice(0, 10));
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0,10));
   }
   return days;
 }
 
-function shortLabel(isoDay) {
-  const [, m, dd] = isoDay.split('-');
-  return `${m}/${dd}`;
+function getLast30Days() {
+  const days = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  return days;
 }
 
+function shortLabel(iso) {
+  const [,m,d] = iso.split('-'); return `${m}/${d}`;
+}
+
+function allZero(arr) { return arr.every(v => v === 0); }
+
+/* Scan trend line chart */
 function drawScansChart() {
   const days   = getLast14Days();
-  const counts = days.map(day =>
-    allScans.filter(s => s.scanned_at && s.scanned_at.slice(0, 10) === day).length
-  );
+  const counts = days.map(day => allScans.filter(s => s.scanned_at?.slice(0,10) === day).length);
+  const empty  = allZero(counts);
 
+  document.getElementById('emptyScans').style.display = empty ? 'flex' : 'none';
   if (chartScansInst) { chartScansInst.destroy(); chartScansInst = null; }
 
   chartScansInst = new Chart(document.getElementById('chartScans').getContext('2d'), {
@@ -504,15 +937,9 @@ function drawScansChart() {
     data: {
       labels: days.map(shortLabel),
       datasets: [{
-        label: 'Scans',
-        data: counts,
-        borderColor: '#a855f7',
-        backgroundColor: 'rgba(168,85,247,0.15)',
-        borderWidth: 2,
-        pointBackgroundColor: '#c084fc',
-        pointRadius: 4,
-        tension: 0.35,
-        fill: true
+        label: 'Scans', data: counts,
+        borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.15)',
+        borderWidth: 2, pointBackgroundColor: '#c084fc', pointRadius: 4, tension: 0.35, fill: true
       }]
     },
     options: {
@@ -526,15 +953,14 @@ function drawScansChart() {
   });
 }
 
+/* Subscription stacked bar chart */
 function drawSubsChart() {
   const days         = getLast14Days();
-  const activeCounts = days.map(day =>
-    allUsers.filter(u => u.createdAt && u.createdAt.slice(0,10) === day && u.subscription.active).length
-  );
-  const expiredCounts = days.map(day =>
-    allUsers.filter(u => u.createdAt && u.createdAt.slice(0,10) === day && u.subscription.reason === 'expired').length
-  );
+  const activeCounts  = days.map(day => allUsers.filter(u => u.createdAt?.slice(0,10) === day && u.subscription.active).length);
+  const expiredCounts = days.map(day => allUsers.filter(u => u.createdAt?.slice(0,10) === day && u.subscription.reason === 'expired').length);
+  const empty = allZero(activeCounts) && allZero(expiredCounts);
 
+  document.getElementById('emptySubs').style.display = empty ? 'flex' : 'none';
   if (chartSubsInst) { chartSubsInst.destroy(); chartSubsInst = null; }
 
   chartSubsInst = new Chart(document.getElementById('chartSubs').getContext('2d'), {
@@ -542,8 +968,8 @@ function drawSubsChart() {
     data: {
       labels: days.map(shortLabel),
       datasets: [
-        { label: 'Active',   data: activeCounts,  backgroundColor: 'rgba(106,191,80,0.75)', borderRadius: 4 },
-        { label: 'Expired',  data: expiredCounts, backgroundColor: 'rgba(255,112,112,0.65)', borderRadius: 4 }
+        { label: 'Active',  data: activeCounts,  backgroundColor: 'rgba(106,191,80,0.75)', borderRadius: 4 },
+        { label: 'Expired', data: expiredCounts, backgroundColor: 'rgba(255,112,112,0.65)', borderRadius: 4 }
       ]
     },
     options: {
@@ -557,20 +983,90 @@ function drawSubsChart() {
   });
 }
 
-// ============================================================
-// CSV EXPORT
-// ============================================================
+/* Monthly revenue trend (active subs × price per day, last 30 days) */
+function drawRevenueChart() {
+  const price  = parseFloat(document.getElementById('revenuePrice').value) || 0;
+  const days   = getLast30Days();
+  // For each day, count how many active users existed on that day
+  // Approximation: user is counted on a day if createdAt <= day and subscription is currently active
+  const revenues = days.map(day => {
+    const activeOnDay = allUsers.filter(u => {
+      if (!u.createdAt) return false;
+      return u.createdAt.slice(0,10) <= day && u.subscription.active;
+    }).length;
+    return parseFloat((activeOnDay * price).toFixed(2));
+  });
+  const empty = allZero(revenues);
+
+  document.getElementById('emptyRevenue').style.display = empty ? 'flex' : 'none';
+  if (chartRevenueInst) { chartRevenueInst.destroy(); chartRevenueInst = null; }
+
+  chartRevenueInst = new Chart(document.getElementById('chartRevenue').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: days.map(shortLabel),
+      datasets: [{
+        label: 'Est. Revenue ($)', data: revenues,
+        borderColor: '#a78bfa', backgroundColor: 'rgba(167,139,250,0.12)',
+        borderWidth: 2, pointBackgroundColor: '#c084fc', pointRadius: 3, tension: 0.3, fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#a855f7', font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#5b3a7a', font: { size: 10 }, maxTicksLimit: 10 }, grid: { color: '#1e0f35' } },
+        y: { ticks: { color: '#5b3a7a', font: { size: 10 }, callback: v => '$' + v }, grid: { color: '#1e0f35' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+/* Per-user scan volume chart (inside user detail modal) */
+function drawUserScansChart(email) {
+  const userScans = allScans.filter(s => s.user_email === email);
+  if (chartUserScansInst) { chartUserScansInst.destroy(); chartUserScansInst = null; }
+
+  if (!userScans.length) return;
+
+  // Group by date
+  const byDate = {};
+  userScans.forEach(s => {
+    const d = s.scanned_at?.slice(0,10) || 'unknown';
+    byDate[d] = (byDate[d] || 0) + 1;
+  });
+  const labels = Object.keys(byDate).sort();
+  const data   = labels.map(l => byDate[l]);
+
+  chartUserScansInst = new Chart(document.getElementById('chartUserScans').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels.map(shortLabel),
+      datasets: [{ label: 'Scans', data, backgroundColor: 'rgba(168,85,247,0.65)', borderRadius: 4 }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#5b3a7a', font: { size: 10 } }, grid: { color: '#1e0f35' } },
+        y: { ticks: { color: '#5b3a7a', font: { size: 10 }, precision: 0 }, grid: { color: '#1e0f35' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CSV EXPORT
+═══════════════════════════════════════════════════════════ */
 function downloadCSV(filename, rows) {
-  const csv = rows.map(r =>
-    r.map(cell => {
-      const s = String(cell ?? '').replace(/"/g, '""');
-      return /[,"\n\r]/.test(s) ? `"${s}"` : s;
-    }).join(',')
-  ).join('\n');
+  const csv = rows.map(r => r.map(cell => {
+    const s = String(cell ?? '').replace(/"/g, '""');
+    return /[,"\n\r]/.test(s) ? `"${s}"` : s;
+  }).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
+  const a    = Object.assign(document.createElement('a'), { href: url, download: filename });
+  a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -578,83 +1074,74 @@ function exportUsersCSV() {
   if (!allUsers.length) { showToast('No users loaded yet', true); return; }
   downloadCSV('woodapp-users.csv', [
     ['ID','Email','Status','Days Left','Scans Used','Scans Limit','Created'],
-    ...allUsers.map(u => [
-      u.id, u.email, u.subscription.reason, u.subscription.daysLeft,
-      u.scans.used, u.scans.limit, new Date(u.createdAt).toLocaleDateString()
-    ])
+    ...allUsers.map(u => [u.id, u.email, u.subscription.reason, u.subscription.daysLeft,
+      u.scans.used, u.scans.limit, new Date(u.createdAt).toLocaleDateString()])
   ]);
   showToast('Users CSV downloaded');
+  addAudit('Exported users CSV');
 }
 
 function exportScansCSV() {
   if (!allScans.length) { showToast('No scans loaded yet', true); return; }
   downloadCSV('woodapp-scans.csv', [
     ['User Email','Scanned At','Entries','Total Volume (ft³)','Measurements'],
-    ...allScans.map(s => [
-      s.user_email,
-      new Date(s.scanned_at).toLocaleString(),
-      s.entries.length,
-      s.total_volume.toFixed(3),
-      s.entries.map(e => `${e.a_raw}x${e.b_raw}`).join(' | ')
-    ])
+    ...allScans.map(s => [s.user_email, new Date(s.scanned_at).toLocaleString(),
+      s.entries.length, s.total_volume.toFixed(3), s.entries.map(e => `${e.a_raw}x${e.b_raw}`).join(' | ')])
   ]);
   showToast('Scans CSV downloaded');
+  addAudit('Exported scans CSV');
 }
 
-// ============================================================
-// USER DETAIL MODAL
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   USER DETAIL MODAL
+═══════════════════════════════════════════════════════════ */
 function openUserModal(email) {
   const u = allUsers.find(x => x.email === email);
   if (!u) { showToast('User not found — try refreshing', true); return; }
 
   document.getElementById('umEmail').textContent = u.email;
-  document.getElementById('umMeta').textContent  =
-    `ID: ${u.id}  ·  Joined: ${new Date(u.createdAt).toLocaleDateString()}`;
+  document.getElementById('umMeta').textContent  = `ID: ${u.id}  ·  Joined: ${new Date(u.createdAt).toLocaleDateString()}`;
 
   document.getElementById('umInfo').innerHTML = `
     <span class="k">Status</span>
     <span class="v status-${esc(u.subscription.reason)}">${esc(u.subscription.reason.toUpperCase())}</span>
-    <span class="k">Days Left</span>
-    <span class="v">${u.subscription.daysLeft}</span>
-    <span class="k">Scans Today</span>
-    <span class="v">${u.scans.used} / ${u.scans.limit}</span>
-    <span class="k">Sub Active</span>
-    <span class="v">${u.subscription.active ? '✅ Yes' : '❌ No'}</span>
-  `;
+    <span class="k">Days Left</span><span class="v">${u.subscription.daysLeft}</span>
+    <span class="k">Scans Today</span><span class="v">${u.scans.used} / ${u.scans.limit}</span>
+    <span class="k">Sub Active</span><span class="v">${u.subscription.active ? '✅ Yes' : '❌ No'}</span>`;
 
   const userScans = allScans.filter(s => s.user_email === email);
-  const umScans   = document.getElementById('umScans');
-  if (!userScans.length) {
-    umScans.innerHTML = '<div class="no-scans">No scans recorded for this user yet.</div>';
-  } else {
-    umScans.innerHTML = userScans.map(s => `
-      <div class="scan-row-mini">
-        <div class="scan-date">${new Date(s.scanned_at).toLocaleString()}</div>
-        <div class="scan-details">
-          <span>Entries: ${s.entries.length}</span>
-          <span>Volume: ${s.total_volume.toFixed(3)} ft³</span>
-        </div>
-        <div class="scan-entries">${s.entries.map(e => `${esc(e.a_raw)}×${esc(e.b_raw)}`).join(', ')}</div>
-      </div>`
-    ).join('');
-  }
+  document.getElementById('umScans').innerHTML = userScans.length
+    ? userScans.map(s => `
+        <div class="scan-row-mini">
+          <div class="scan-date">${new Date(s.scanned_at).toLocaleString()}</div>
+          <div class="scan-details">
+            <span>Entries: ${s.entries.length}</span>
+            <span>Volume: ${s.total_volume.toFixed(3)} ft³</span>
+          </div>
+          <div class="scan-entries">${s.entries.map(e => `${esc(e.a_raw)}×${esc(e.b_raw)}`).join(', ')}</div>
+        </div>`).join('')
+    : '<div class="no-scans">No scans recorded for this user yet.</div>';
 
   document.getElementById('userModal').classList.add('active');
+
+  // Draw per-user chart after modal is visible (canvas needs layout)
+  requestAnimationFrame(() => drawUserScansChart(email));
 }
 
 function closeUserModal() {
   document.getElementById('userModal').classList.remove('active');
+  // Destroy per-user chart to free canvas
+  if (chartUserScansInst) { chartUserScansInst.destroy(); chartUserScansInst = null; }
 }
 
-// Close user modal on backdrop click
+// Backdrop click closes user modal
 document.addEventListener('click', e => {
   if (e.target === document.getElementById('userModal')) closeUserModal();
 });
 
-// ============================================================
-// ORIGINAL MODAL  (untouched)
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   ORIGINAL CONFIRM MODAL  ← untouched
+═══════════════════════════════════════════════════════════ */
 function closeModal() {
   document.getElementById('modal').classList.remove('active');
   pendingAction = null;
@@ -663,9 +1150,34 @@ function confirmAction() {
   if (pendingAction) pendingAction();
 }
 
-// ============================================================
-// TOAST  (original, untouched)
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   AUDIT LOG
+═══════════════════════════════════════════════════════════ */
+function addAudit(msg) {
+  const now = new Date().toLocaleTimeString();
+  auditLog.unshift({ time: now, msg });
+  renderAuditLog();
+}
+
+function renderAuditLog() {
+  const el = document.getElementById('auditLog');
+  if (!auditLog.length) {
+    el.innerHTML = '<div class="audit-empty">No actions yet this session</div>';
+    return;
+  }
+  el.innerHTML = auditLog.map(e =>
+    `<div class="audit-entry"><span class="audit-time">${esc(e.time)}</span><span class="audit-msg">${esc(e.msg)}</span></div>`
+  ).join('');
+}
+
+function clearAuditLog() {
+  auditLog = [];
+  renderAuditLog();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST  ← original, untouched
+═══════════════════════════════════════════════════════════ */
 function showToast(msg, isError) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -673,18 +1185,18 @@ function showToast(msg, isError) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ============================================================
-// XSS GUARD — escapes text before injecting into innerHTML
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   XSS GUARD
+═══════════════════════════════════════════════════════════ */
 function esc(str) {
   return String(str ?? '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ============================================================
-// AUTO REFRESH  (original, untouched)
-// ============================================================
+/* ═══════════════════════════════════════════════════════════
+   AUTO REFRESH  ← original, untouched
+═══════════════════════════════════════════════════════════ */
 setInterval(() => {
   if (document.getElementById('dashboard').style.display !== 'none') {
     loadUsers();
